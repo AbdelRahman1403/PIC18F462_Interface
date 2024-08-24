@@ -4809,7 +4809,7 @@ std_ReturnType Intrrupt_INTx_Init(const intrrupt_INTx_t *obj){
         ret |= Intrrupt_INTx_Edge_Init(obj);
 
 
-        ret |= Intrrupt_INTx_Priority_Init(obj);
+
 
 
         ret |= Intrrupt_INTx_Pin_Init(obj);
@@ -4963,44 +4963,26 @@ static std_ReturnType Intrrupt_INTx_Enable(const intrrupt_INTx_t *obj){
 
             case intrrupt_INTX_0:
 
-                (INTCONbits.GIEH = 1);
 
 
-
+                (INTCONbits.GIE = 1);
+                (INTCONbits.PEIE = 1);
 
                 (INTCONbits.INT0IE = 1);
                 ret |= (std_ReturnType) 0x01;
                 break;
             case intrrupt_INTX_1:
-
-            (RCONbits.IPEN = 1);
-            if(intrrupt_high_prioity == obj->priority){
-            (INTCONbits.GIEH = 1);
-            }
-            else if(intrrupt_low_prioity == obj->priority){
-            (INTCONbits.GIEL = 1);
-            }
-            else { }
-
-
-
+# 220 "MCAL_Layer/intrrupt/mcal_external_intrrupt.c"
+                (INTCONbits.GIE = 1);
+                (INTCONbits.PEIE = 1);
 
                 (INTCON3bits.INT1IE = 1);
                 ret |= (std_ReturnType) 0x01;
                 break;
             case intrrupt_INTX_2:
-
-            (RCONbits.IPEN = 1);
-            if(intrrupt_high_prioity == obj->priority){
-            (INTCONbits.GIEH = 1);
-            }
-            else if(intrrupt_low_prioity == obj->priority){
-            (INTCONbits.GIEL = 1);
-            }
-            else { }
-
-
-
+# 237 "MCAL_Layer/intrrupt/mcal_external_intrrupt.c"
+                (INTCONbits.GIE = 1);
+                (INTCONbits.PEIE = 1);
 
                 (INTCON3bits.INT2IE = 1);
                 ret |= (std_ReturnType) 0x01;
@@ -5035,45 +5017,7 @@ static std_ReturnType Intrrupt_INTx_Disable(const intrrupt_INTx_t *obj){
     }
     return ret;
 }
-
-static std_ReturnType Intrrupt_INTx_Priority_Init(const intrrupt_INTx_t *obj){
-    std_ReturnType ret = (std_ReturnType) 0x00;
-    if(obj == ((void*)0)){
-        ret = (std_ReturnType) 0x00;
-    }
-    else{
-        switch(obj->src){
-        case intrrupt_INTX_1:
-            if(intrrupt_low_prioity == obj->priority){
-                (INTCON3bits.INT1IP = 0);
-            }
-            else if(intrrupt_high_prioity == obj->priority){
-                (INTCON3bits.INT1IP = 1);
-            }
-            else { }
-            ret |= (std_ReturnType) 0x01;
-            break;
-
-        case intrrupt_INTX_2:
-            if(intrrupt_low_prioity == obj->priority){
-                (INTCON3bits.INT2IP = 1);
-            }
-            else if(intrrupt_high_prioity == obj->priority){
-                (INTCON3bits.INT2IP = 0);
-            }
-            ret |= (std_ReturnType) 0x01;
-            break;
-
-            default:
-                ret |= (std_ReturnType) 0x00;
-                break;
-        }
-        ret |= (std_ReturnType) 0x01;
-    }
-    return ret;
-}
-
-
+# 312 "MCAL_Layer/intrrupt/mcal_external_intrrupt.c"
 static std_ReturnType Intrrupt_INTx_Edge_Init(const intrrupt_INTx_t *obj){
     std_ReturnType ret = (std_ReturnType) 0x00;
     if(obj == ((void*)0)){
@@ -5221,21 +5165,9 @@ static std_ReturnType Intrrupt_RBx_Enable(const intrrupt_RPx_t *obj_rbx){
     else{
         (INTCONbits.RBIE = 0);
         (INTCONbits.RBIF = 1);
-
-        (RCONbits.IPEN = 1);
-      if(intrrupt_high_prioity == obj_rbx->priority){
-        (INTCONbits.GIEH = 1);
-
-        (INTCON2bits.RBIP = 1);
-         }
-       else if(intrrupt_low_prioity == obj_rbx->priority){
-         (INTCONbits.GIEL = 1);
-         (INTCON2bits.RBIP = 0);
-         }
-            else { }
-
-
-
+# 472 "MCAL_Layer/intrrupt/mcal_external_intrrupt.c"
+                (INTCONbits.GIE = 1);
+                (INTCONbits.PEIE = 1);
 
         ret |= gpio_pin_direction_intiailize(&(obj_rbx->mcu_pin));
         switch(obj_rbx->mcu_pin.pin){

@@ -4770,9 +4770,12 @@ std_ReturnType Intrrupt_RBx_Deinit(const intrrupt_INTx_t *obj);
 
 
 
+
 void INT0_ISR(void);
 void INT1_ISR(void);
 void INT2_ISR(void);
+
+
 void RB4_ISR(uint8 level);
 void RB5_ISR(uint8 level);
 void RB6_ISR(uint8 level);
@@ -4783,8 +4786,9 @@ volatile uint8 RB4_flag;
 volatile uint8 RB5_flag;
 volatile uint8 RB6_flag;
 volatile uint8 RB7_flag;
+# 25 "MCAL_Layer/intrrupt/mcal_intrrupt_manager.c"
+void __attribute__((picinterrupt(("")))) Intrrupt_Manager_Priority(){
 
-void __attribute__((picinterrupt(("")))) Intrrupt_Manager_Higer_Priority(){
     if((INTCONbits.INT0IE == 1) && (INTCONbits.INT0IF == 1)){
         INT0_ISR();
     }
@@ -4793,11 +4797,60 @@ void __attribute__((picinterrupt(("")))) Intrrupt_Manager_Higer_Priority(){
         INT1_ISR();
     }
     else { }
-}
-
-void __attribute__((picinterrupt(("low_priority")))) Intrrupt_Manager_Lower_Priority(){
     if((INTCON3bits.INT2IE == 1) && (INTCON3bits.INT2IF == 1)){
         INT2_ISR();
     }
     else { }
+
+
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB4 = GPIO_HIGH) && (RB4_flag == 1)){
+        RB4_flag = 0;
+        RB4_ISR(1);
+    }
+    else { }
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB4 = GPIO_LOW) && (RB4_flag == 0)){
+        RB4_flag = 1;
+        RB4_ISR(0);
+    }
+    else { }
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB5 = GPIO_HIGH) && (RB5_flag == 1)){
+        RB5_flag = 0;
+        RB5_ISR(1);
+    }
+    else { }
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB5 = GPIO_LOW) && (RB5_flag == 0)){
+        RB5_flag = 1;
+        RB5_ISR(0);
+    }
+    else { }
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB6 = GPIO_HIGH) && (RB6_flag == 1)){
+        RB6_flag = 0;
+        RB6_ISR(1);
+    }
+    else { }
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB6 = GPIO_LOW) && (RB6_flag == 0)){
+        RB6_flag = 1;
+        RB6_ISR(0);
+    }
+    else { }
+
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB7 = GPIO_HIGH) && (RB7_flag == 1)){
+        RB7_flag = 0;
+        RB7_ISR(1);
+    }
+    else { }
+    if((INTCONbits.RBIE == 1) && (INTCONbits.RBIF == 1) &&
+        (PORTBbits.RB7 = GPIO_LOW) && (RB7_flag == 0)){
+        RB7_flag = 1;
+        RB7_ISR(0);
+    }
+    else { }
+# 99 "MCAL_Layer/intrrupt/mcal_intrrupt_manager.c"
 }

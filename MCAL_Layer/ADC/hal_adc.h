@@ -56,7 +56,10 @@ typedef enum{
 }adc_conversion_time_t;
 
 typedef struct{
+#if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
     void (* ADC_InttrepputHandler)(void);
+    intrrupt_priority_cfg priority;
+#endif
     adc_channel_select_t adc_channal;
     adc_acquisition_time_t adc_acquisition;
     adc_conversion_time_t adc_conversion;
@@ -135,6 +138,7 @@ std_ReturnType ADC_Is_Conversion_Done(adc_config_t *_adc , uint8 *Conversion_sta
 std_ReturnType ADC_Get_Conversion_Result(adc_config_t *_adc , uint16 *Conversion_Result);
 std_ReturnType ADC_Get_Conversion_Blocking(adc_config_t *_adc , uint16 *Conversion_Result ,
                                   adc_channel_select_t adc_channel);
+std_ReturnType ADC_Start_Conversion_Interrupt(adc_config_t *_adc ,adc_channel_select_t adc_channel);
 
 #endif	/* HAL_ADC_H */
 

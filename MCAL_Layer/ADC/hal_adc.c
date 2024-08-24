@@ -2,6 +2,9 @@
 static inline void select_input_pin_channel(adc_channel_select_t channel);
 static inline void select_Result_Formant(adc_config_t *adc);
 static inline void select_Voltage_Refernce(adc_config_t *adc);
+#if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
+void (* _ADC_InterruptHandler)(void) = NULL;
+#endif
 /**
  * 
  * @param _adc
@@ -15,13 +18,32 @@ std_ReturnType ADC_INIT(adc_config_t *_adc){
     else{
         /* Disable A/D Converter */
         ADC_MODULE_DISABLE();
-        /* Configure The Acquesion Time */
+        /* Configure The Acquisition Time */
         ADCON2bits.ACQT = _adc->adc_acquisition;
         /* Configure The Conversion Clock */
         ADCON2bits.ADCS = _adc->adc_conversion;
         /* Configure the input channel */
         ADCON0bits.CHS = _adc->adc_channal;
         select_input_pin_channel(_adc->adc_channal);
+        /* Configure The Interrupt Feature */
+#if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
+        INTRRUTPT_Global_IntrruptEnable();
+        INTRRUTPT_Peripheral_Intrrupt_Enable();
+        ADC_INTERRUPT_Enable();
+        ADC_INTERRUPT_Flag_Clear();
+#if INTRRUPT_PRIORITY_LEVELS_ENABLE == Feture_enable
+        INTRRUTPT_Priority_Levels_Enable();
+        if(_adc->priority == intrrupt_low_prioity) { 
+            INTRRUTPT_GlobalIntrruptHighEnable(); 
+            ADC_Interrupt_HigherPrioritySet();
+        }
+        else if(_adc->priority == intrrupt_high_prioity) {
+            INTRRUTPT_GlobalIntrruptLowEnable(); 
+            ADC_Interrupt_LowerPrioritySet();
+        }
+#endif
+        _ADC_InterruptHandler = _adc->ADC_InttrepputHandler;
+#endif
         /* Configure Voltage Format */
         select_Voltage_Refernce(_adc);
         /* select Result Format */
@@ -156,22 +178,65 @@ std_ReturnType ADC_Get_Conversion_Blocking(adc_config_t *_adc , uint16 *Conversi
     }
     return ret;
 }
- 
+#if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
+ std_ReturnType ADC_Start_Conversion_Interrupt(adc_config_t *_adc ,adc_channel_select_t adc_channel){
+     std_ReturnType ret = E_NOK;
+    if((_adc == NULL)){
+        ret = E_NOK;
+    }
+    else{
+        /* Select Channel Analog Input */
+        ADC_Select_Channel(_adc , adc_channel);
+        /* Start The Conversion Process From Analog To Digital */
+        ADC_Start_Conversion(_adc);
+        ret = E_OK;
+    }
+    return ret;
+ }
+#endif
 static inline void select_input_pin_channel(adc_channel_select_t channel){
-    switch(channel){
-        case ADC_AN0_ANALOG_FUNCTIONLITY :  SET_BIT(TRISA , _TRISA_RA0_POSN); break;
-        case ADC_AN1_ANALOG_FUNCTIONLITY :  SET_BIT(TRISA , _TRISA_RA1_POSN); break;
-        case ADC_AN2_ANALOG_FUNCTIONLITY :  SET_BIT(TRISA , _TRISA_RA2_POSN); break;
-        case ADC_AN3_ANALOG_FUNCTIONLITY :  SET_BIT(TRISA , _TRISA_RA3_POSN); break;
-        case ADC_AN4_ANALOG_FUNCTIONLITY :  SET_BIT(TRISA , _TRISA_RA5_POSN); break;
-        case ADC_AN5_ANALOG_FUNCTIONLITY :  SET_BIT(TRISE , _TRISE_RE0_POSN); break;
-        case ADC_AN6_ANALOG_FUNCTIONLITY :  SET_BIT(TRISE , _TRISE_RE1_POSN); break;
-        case ADC_AN7_ANALOG_FUNCTIONLITY :  SET_BIT(TRISE , _TRISE_RE2_POSN); break;
-        case ADC_AN8_ANALOG_FUNCTIONLITY :  SET_BIT(TRISB , _TRISB_RB2_POSN); break;
-        case ADC_AN9_ANALOG_FUNCTIONLITY :  SET_BIT(TRISB , _TRISB_RB3_POSN); break;
-        case ADC_AN10_ANALOG_FUNCTIONLITY : SET_BIT(TRISB , _TRISB_RB1_POSN); break;
-        case ADC_AN11_ANALOG_FUNCTIONLITY : SET_BIT(TRISB , _TRISB_RB4_POSN); break;
-        case ADC_AN12_ANALOG_FUNCTIONLITY : SET_BIT(TRISB , _TRISB_RB0_POSN); break;
+    switch(channel)
+    {
+        case ADC_CHANNEL_AN0:
+            SET_BIT(TRISA, _TRISA_RA0_POSN);
+            break;
+        case ADC_CHANNEL_AN1:
+            SET_BIT(TRISA, _TRISA_RA1_POSN);
+            break;
+        case ADC_CHANNEL_AN2:
+            SET_BIT(TRISA, _TRISA_RA2_POSN);
+            break;
+        case ADC_CHANNEL_AN3:
+            SET_BIT(TRISA, _TRISA_RA3_POSN);
+            break;
+        case ADC_CHANNEL_AN4:
+            SET_BIT(TRISA, _TRISA_RA5_POSN);
+            break;
+        case ADC_CHANNEL_AN5:
+            SET_BIT(TRISE, _TRISE_RE0_POSN);
+            break;
+        case ADC_CHANNEL_AN6:
+            SET_BIT(TRISE, _TRISE_RE1_POSN);
+            break;
+        case ADC_CHANNEL_AN7:
+            SET_BIT(TRISE, _TRISE_RE2_POSN);
+            break;
+        case ADC_CHANNEL_AN8:
+            SET_BIT(TRISB, _TRISB_RB2_POSN);
+            break;
+        case ADC_CHANNEL_AN9:
+            SET_BIT(TRISB, _TRISB_RB3_POSN);
+            break;
+        case ADC_CHANNEL_AN10:
+            SET_BIT(TRISB, _TRISB_RB1_POSN);
+            break;
+        case ADC_CHANNEL_AN11:
+            SET_BIT(TRISB, _TRISB_RB4_POSN);
+            break;
+        case ADC_CHANNEL_AN12:
+            SET_BIT(TRISB, _TRISB_RB0_POSN);
+            break;
+        
     }
 }
 
@@ -197,3 +262,12 @@ static inline void select_Voltage_Refernce(adc_config_t *adc){
         
     }
 }
+#if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
+void ADC_ISR(void){
+    ADC_INTERRUPT_Flag_Clear();
+    
+    if(_ADC_InterruptHandler){
+        _ADC_InterruptHandler();
+    }
+}
+#endif

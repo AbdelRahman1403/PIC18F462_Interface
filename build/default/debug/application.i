@@ -5000,7 +5000,10 @@ typedef enum{
 }adc_conversion_time_t;
 
 typedef struct{
-    void (* ADC_InttrepputHandler)(void);
+
+
+
+
     adc_channel_select_t adc_channal;
     adc_acquisition_time_t adc_acquisition;
     adc_conversion_time_t adc_conversion;
@@ -5008,7 +5011,7 @@ typedef struct{
     uint8 result_format : 1;
     uint8 reseved_bits : 6;
 }adc_config_t;
-# 130 "./MCAL_Layer/ADC/hal_adc.h"
+# 133 "./MCAL_Layer/ADC/hal_adc.h"
 std_ReturnType ADC_INIT(adc_config_t *_adc);
 std_ReturnType ADC_De_INIT(adc_config_t *_adc);
 std_ReturnType ADC_Select_Channel(adc_config_t *_adc , adc_channel_select_t adc_channel);
@@ -5017,31 +5020,33 @@ std_ReturnType ADC_Is_Conversion_Done(adc_config_t *_adc , uint8 *Conversion_sta
 std_ReturnType ADC_Get_Conversion_Result(adc_config_t *_adc , uint16 *Conversion_Result);
 std_ReturnType ADC_Get_Conversion_Blocking(adc_config_t *_adc , uint16 *Conversion_Result ,
                                   adc_channel_select_t adc_channel);
+std_ReturnType ADC_Start_Conversion_Interrupt(adc_config_t *_adc ,adc_channel_select_t adc_channel);
 # 23 "./application.h" 2
 
 
 void int_app(void);
 # 7 "application.c" 2
 
-uint8 pot_1 , pot_2 , pot_3;
+uint16 res, res_1 , res_2;
+void __ADC_InterruptHandler();
 adc_config_t adc_1 = {
-  .ADC_InttrepputHandler = ((void*)0),
-  .adc_channal = ADC_CHANNEL_AN0,
-  .adc_acquisition = adc_12_TAD,
-  .adc_conversion = adc_conversion_FOSC_div_8,
+
+  .adc_channal = ADC_CHANNEL_AN1,
+  .adc_acquisition = adc_2_TAD,
+  .adc_conversion = adc_conversion_FOSC_div_16,
   .result_format = 0x01u,
   .voltage_format = 0x01u
 };
+
 int main(){
 
-    ADC_INIT(&adc_1);
-
+   ADC_INIT(&adc_1);
     while(1){
-        ADC_Get_Conversion_Blocking(&adc_1 , &pot_1 , ADC_CHANNEL_AN0);
-        ADC_Get_Conversion_Blocking(&adc_1 , &pot_2 , ADC_CHANNEL_AN1);
-        ADC_Get_Conversion_Blocking(&adc_1 , &pot_3 , ADC_CHANNEL_AN2);
-
+        ADC_Get_Conversion_Blocking(&adc_1 , &res , ADC_CHANNEL_AN0);
     }
 
     return (0);
+}
+void __ADC_InterruptHandler(void){
+    ADC_Get_Conversion_Result(&adc_1 , &res);
 }

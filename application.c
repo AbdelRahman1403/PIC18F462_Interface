@@ -5,29 +5,29 @@
  * Created on April 16, 2024, 11:10 AM
  */
 #include "application.h"
-uint8 pot_1 , pot_2 , pot_3;
+uint16 res, res_1 , res_2;
+void __ADC_InterruptHandler();
 adc_config_t adc_1 = {
-  .ADC_InttrepputHandler = NULL,
-  .adc_channal = ADC_CHANNEL_AN0,
-  .adc_acquisition = adc_12_TAD,
-  .adc_conversion = adc_conversion_FOSC_div_8,
+//  .ADC_InttrepputHandler = __ADC_InterruptHandler,
+  .adc_channal = ADC_CHANNEL_AN1,
+  .adc_acquisition = adc_2_TAD,
+  .adc_conversion = adc_conversion_FOSC_div_16,
   .result_format = Right_Format,
   .voltage_format = Voltage_Reference_Enable
 };
+
 int main(){
     
-    ADC_INIT(&adc_1);
-    
+   ADC_INIT(&adc_1);
     while(1){
-        ADC_Get_Conversion_Blocking(&adc_1 , &pot_1 , ADC_CHANNEL_AN0);
-        ADC_Get_Conversion_Blocking(&adc_1 , &pot_2 , ADC_CHANNEL_AN1);
-        ADC_Get_Conversion_Blocking(&adc_1 , &pot_3 , ADC_CHANNEL_AN2);
-        //ADC_Get_Conversion_Blocking(&adc_1 , &pot_1 , ADC_CHANNEL_AN0);
+        ADC_Get_Conversion_Blocking(&adc_1 , &res , ADC_CHANNEL_AN0);
     }
     
     return (EXIT_SUCCESS);
 }
-
+void __ADC_InterruptHandler(void){
+    ADC_Get_Conversion_Result(&adc_1 , &res);
+}
 
 
 

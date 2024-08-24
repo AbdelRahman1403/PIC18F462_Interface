@@ -4783,7 +4783,10 @@ typedef enum{
 }adc_conversion_time_t;
 
 typedef struct{
-    void (* ADC_InttrepputHandler)(void);
+
+
+
+
     adc_channel_select_t adc_channal;
     adc_acquisition_time_t adc_acquisition;
     adc_conversion_time_t adc_conversion;
@@ -4791,7 +4794,7 @@ typedef struct{
     uint8 result_format : 1;
     uint8 reseved_bits : 6;
 }adc_config_t;
-# 130 "MCAL_Layer/ADC/hal_adc.h"
+# 133 "MCAL_Layer/ADC/hal_adc.h"
 std_ReturnType ADC_INIT(adc_config_t *_adc);
 std_ReturnType ADC_De_INIT(adc_config_t *_adc);
 std_ReturnType ADC_Select_Channel(adc_config_t *_adc , adc_channel_select_t adc_channel);
@@ -4800,16 +4803,13 @@ std_ReturnType ADC_Is_Conversion_Done(adc_config_t *_adc , uint8 *Conversion_sta
 std_ReturnType ADC_Get_Conversion_Result(adc_config_t *_adc , uint16 *Conversion_Result);
 std_ReturnType ADC_Get_Conversion_Blocking(adc_config_t *_adc , uint16 *Conversion_Result ,
                                   adc_channel_select_t adc_channel);
+std_ReturnType ADC_Start_Conversion_Interrupt(adc_config_t *_adc ,adc_channel_select_t adc_channel);
 # 1 "MCAL_Layer/ADC/hal_adc.c" 2
 
 static __attribute__((inline)) void select_input_pin_channel(adc_channel_select_t channel);
 static __attribute__((inline)) void select_Result_Formant(adc_config_t *adc);
 static __attribute__((inline)) void select_Voltage_Refernce(adc_config_t *adc);
-
-
-
-
-
+# 13 "MCAL_Layer/ADC/hal_adc.c"
 std_ReturnType ADC_INIT(adc_config_t *_adc){
     std_ReturnType ret = (std_ReturnType) 0x00;
     if(_adc == ((void*)0)){
@@ -4825,7 +4825,7 @@ std_ReturnType ADC_INIT(adc_config_t *_adc){
 
         ADCON0bits.CHS = _adc->adc_channal;
         select_input_pin_channel(_adc->adc_channal);
-
+# 48 "MCAL_Layer/ADC/hal_adc.c"
         select_Voltage_Refernce(_adc);
 
         select_Result_Formant(_adc);
@@ -4959,22 +4959,50 @@ std_ReturnType ADC_Get_Conversion_Blocking(adc_config_t *_adc , uint16 *Conversi
     }
     return ret;
 }
-
+# 197 "MCAL_Layer/ADC/hal_adc.c"
 static __attribute__((inline)) void select_input_pin_channel(adc_channel_select_t channel){
-    switch(channel){
-        case 0x0E : (TRISA |= ((uint8)1 << 0x0)); break;
-        case 0x0D : (TRISA |= ((uint8)1 << 0x1)); break;
-        case 0x0C : (TRISA |= ((uint8)1 << 0x2)); break;
-        case 0x0B : (TRISA |= ((uint8)1 << 0x3)); break;
-        case 0x0A : (TRISA |= ((uint8)1 << 0x5)); break;
-        case 0x09 : (TRISE |= ((uint8)1 << 0x0)); break;
-        case 0x08 : (TRISE |= ((uint8)1 << 0x1)); break;
-        case 0x07 : (TRISE |= ((uint8)1 << 0x2)); break;
-        case 0x06 : (TRISB |= ((uint8)1 << 0x2)); break;
-        case 0x05 : (TRISB |= ((uint8)1 << 0x3)); break;
-        case 0x04 : (TRISB |= ((uint8)1 << 0x1)); break;
-        case 0x03 : (TRISB |= ((uint8)1 << 0x4)); break;
-        case 0x02 : (TRISB |= ((uint8)1 << 0x0)); break;
+    switch(channel)
+    {
+        case ADC_CHANNEL_AN0:
+            (TRISA |= ((uint8)1 << 0x0));
+            break;
+        case ADC_CHANNEL_AN1:
+            (TRISA |= ((uint8)1 << 0x1));
+            break;
+        case ADC_CHANNEL_AN2:
+            (TRISA |= ((uint8)1 << 0x2));
+            break;
+        case ADC_CHANNEL_AN3:
+            (TRISA |= ((uint8)1 << 0x3));
+            break;
+        case ADC_CHANNEL_AN4:
+            (TRISA |= ((uint8)1 << 0x5));
+            break;
+        case ADC_CHANNEL_AN5:
+            (TRISE |= ((uint8)1 << 0x0));
+            break;
+        case ADC_CHANNEL_AN6:
+            (TRISE |= ((uint8)1 << 0x1));
+            break;
+        case ADC_CHANNEL_AN7:
+            (TRISE |= ((uint8)1 << 0x2));
+            break;
+        case ADC_CHANNEL_AN8:
+            (TRISB |= ((uint8)1 << 0x2));
+            break;
+        case ADC_CHANNEL_AN9:
+            (TRISB |= ((uint8)1 << 0x3));
+            break;
+        case ADC_CHANNEL_AN10:
+            (TRISB |= ((uint8)1 << 0x1));
+            break;
+        case ADC_CHANNEL_AN11:
+            (TRISB |= ((uint8)1 << 0x4));
+            break;
+        case ADC_CHANNEL_AN12:
+            (TRISB |= ((uint8)1 << 0x0));
+            break;
+
     }
 }
 
