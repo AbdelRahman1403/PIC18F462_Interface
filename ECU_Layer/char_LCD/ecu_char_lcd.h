@@ -10,7 +10,7 @@
 
 /*********** Section : Include Libraries          ***********/
 #include "../../MCAL_Layer/GPIO/hal_gpio.h"
-
+#include<string.h>
 /*********** Section : Macro Declaration          ***********/
 #define _LCD_CLEAR                               0x01
 #define _LCD_RETURN_HOME                         0x02
@@ -83,6 +83,6 @@ std_ReturnType lcd_chr_8bit_send_custom_chr(const lcd_8bit_t *lcd , uint8 row,
                                             uint8 column  ,const uint8 chr[] , uint8 mem_pos);
 
 
-
+std_ReturnType convert_uint16_to_string(uint16 value , uint8 *str);
 #endif	/* ECU_CHAR_LCD_H */
 

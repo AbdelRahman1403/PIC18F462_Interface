@@ -290,3 +290,21 @@ static std_ReturnType lcd_chr_4bit_set_cursor(const lcd_4bit_t *lcd , uint8 row 
     return ret;
 }
 
+std_ReturnType convert_uint16_to_string(uint16 value , uint8 *str){
+    std_ReturnType ret = E_OK;
+    uint8 temp_val[6] = {0};
+    uint8 counter = 0;
+    if(str == NULL){
+        ret = E_NOK;
+    }
+    else{
+        memset(str , ' ' , 5);
+        str[6] = '\0';
+        sprintf((char *)temp_val , "%i" , value);
+        while(temp_val[counter] != '\0'){
+            str[counter] = temp_val[counter];
+            counter++;
+        }
+    }
+    return ret;
+}
