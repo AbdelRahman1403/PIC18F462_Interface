@@ -30,6 +30,21 @@
 #endif
 #endif
 
+#if TIMER0_INTRRUPT_FEATURE_ENABLE == Feture_enable
+/* Feature To Disable ADC Interrupt */
+#define TIMER0_INTERRUPT_Enable()         (INTCONbits.TMR0IE = 1)
+/* Feature To Set ADC Interrupt */
+#define TIMER0_INTERRUPT_Disable()        (INTCONbits.TMR0IE = 0)
+/* Feature To Clear Flag ADC Interrupt */
+#define TIMER0_INTERRUPT_Flag_Clear()     (INTCONbits.TMR0IF = 0)
+#if INTRRUPT_PRIORITY_LEVELS_ENABLE == Feture_enable
+/* Enable High Priority Interrupt */
+#define TIMER0_Interrupt_HigherPrioritySet()            (INTCON2bits.TMR0IP = 1)
+/* Enable Low Priority Interrupt */
+#define TIMER0_Interrupt_LowerPrioritySet()             (INTCON2bits.TMR0IP = 0)
+#endif
+#endif
+
 /*********** Section : Function Declaration       ***********/
 
 #endif	/* MCAL_INTERNAL_INTRRUPT_H */

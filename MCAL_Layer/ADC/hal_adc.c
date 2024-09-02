@@ -27,10 +27,10 @@ std_ReturnType ADC_INIT(adc_config_t *_adc){
         select_input_pin_channel(_adc->adc_channal);
         /* Configure The Interrupt Feature */
 #if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
-        INTRRUTPT_Global_IntrruptEnable();
-        INTRRUTPT_Peripheral_Intrrupt_Enable();
         ADC_INTERRUPT_Enable();
         ADC_INTERRUPT_Flag_Clear();
+        _ADC_InterruptHandler = _adc->ADC_InttrepputHandler;
+        
 #if INTRRUPT_PRIORITY_LEVELS_ENABLE == Feture_enable
         INTRRUTPT_Priority_Levels_Enable();
         if(_adc->priority == intrrupt_low_prioity) { 
@@ -38,11 +38,13 @@ std_ReturnType ADC_INIT(adc_config_t *_adc){
             ADC_Interrupt_HigherPrioritySet();
         }
         else if(_adc->priority == intrrupt_high_prioity) {
-            INTRRUTPT_GlobalIntrruptLowEnable(); 
+            INTRRUTPT_GlobalIntrruptLowerEnable(); 
             ADC_Interrupt_LowerPrioritySet();
         }
+#else
+        INTRRUTPT_Global_IntrruptEnable();
+        INTRRUTPT_Peripheral_Intrrupt_Enable();
 #endif
-        _ADC_InterruptHandler = _adc->ADC_InttrepputHandler;
 #endif
         /* Configure Voltage Format */
         select_Voltage_Refernce(_adc);
@@ -181,7 +183,7 @@ std_ReturnType ADC_Get_Conversion_Blocking(adc_config_t *_adc , uint16 *Conversi
 #if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
  std_ReturnType ADC_Start_Conversion_Interrupt(adc_config_t *_adc ,adc_channel_select_t adc_channel){
      std_ReturnType ret = E_NOK;
-    if((_adc == NULL)){
+    if(_adc == NULL){
         ret = E_NOK;
     }
     else{

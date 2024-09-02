@@ -27,5 +27,8 @@ void RB7_ISR(uint8 level);
 #if ADC_INTRRUPT_FEATURE_ENABLE == Feture_enable
 void ADC_ISR(void);
 #endif
+#if TIMER0_INTRRUPT_FEATURE_ENABLE == Feture_enable
+void TIMER0_ISR();
+#endif
 #endif	/* MCAL_INTRRUPT_MANAGER_H */
 

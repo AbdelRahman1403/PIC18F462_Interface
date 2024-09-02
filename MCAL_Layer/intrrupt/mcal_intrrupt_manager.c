@@ -95,6 +95,12 @@ void __interrupt() Intrrupt_Manager_Priority(){
     }
     else { /* Nothing */ }
     #endif
-    
+    #if TIMER0_INTRRUPT_FEATURE_ENABLE == Feture_enable
+    if((INTCONbits.TMR0IE = INTRRUPT_ENABLE) && (INTCONbits.TMR0IF = INTRRUPT_OCCUR))
+    {
+        TIMER0_ISR();
+    }
+    else { /* Nothing */ }
+    #endif
 }
 #endif
